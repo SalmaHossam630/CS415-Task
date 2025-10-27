@@ -12,18 +12,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      
-      - name: Checkout code
+    
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      
+    
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'maven'
 
+    
+      - name: List project files (for debugging)
+        run: ls -R
+
+  
       - name: Run tests
         run: |
           if [ -f "pom.xml" ]; then
@@ -31,8 +35,9 @@ jobs:
             mvn --batch-mode --update-snapshots test
           elif [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
             echo "Gradle project detected. Running tests..."
+            chmod +x ./gradlew
             ./gradlew test
           else
-            echo "No recognized build file found (pom.xml or build.gradle)."
+            echo "❌ No recognized build file found (pom.xml or build.gradle)."
             exit 1
           fi
